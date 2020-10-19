@@ -6,6 +6,8 @@ import HomeScreen from "./src/screens/HomeScreen";
 import SignUpScreen from "./src/screens/SignUpScreen";
 import SignInScreen from "./src/screens/SignInScreen";
 
+import { AuthContext, AuthProvider } from "./src/providers/AuthProvider";
+
 const HomeStack = createStackNavigator();
 const AuthStack = createStackNavigator();
 
@@ -20,18 +22,31 @@ const HomeStackScreen = () => {
 const AuthStackScreen = () => {
   return (
     <AuthStack.Navigator initialRouteName="SignIn">
-      <AuthStack.Screen name="SignIn" component={SignInScreen} options={{headerShown:false}}/>
-      <AuthStack.Screen name="SignUp" component={SignUpScreen} options={{headerShown:false}}/>
+      <AuthStack.Screen
+        name="SignIn"
+        component={SignInScreen}
+        options={{ headerShown: false }}
+      />
+      <AuthStack.Screen
+        name="SignUp"
+        component={SignUpScreen}
+        options={{ headerShown: false }}
+      />
     </AuthStack.Navigator>
   );
 };
 
 function App() {
   return (
-    <NavigationContainer>
-      {/* <HomeStackScreen /> */}
-      <AuthStackScreen />
-    </NavigationContainer>
+    <AuthProvider>
+      <AuthContext.Consumer>
+        {(auth) => (
+          <NavigationContainer>
+            {auth.IsLoggedIn ? <HomeStackScreen /> : <AuthStackScreen />}
+          </NavigationContainer>
+        )}
+      </AuthContext.Consumer>
+    </AuthProvider>
   );
 }
 export default App;

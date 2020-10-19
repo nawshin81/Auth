@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View} from "react-native";
 import { Input, Button, Card } from "react-native-elements";
 import { Zocial,Fontisto,FontAwesome,Ionicons} from "@expo/vector-icons";
 import { SimpleLineIcons } from '@expo/vector-icons';

@@ -1,11 +1,24 @@
 import React, { useState } from "react";
-import { StyleSheet, Button, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { Input, Button} from "react-native-elements";
+import { AuthContext } from "./src/providers/AuthProvider";
 
-const HomeScreen = () => {
+const HomeScreen = (props) => {
   return (
-    <View>
-      <Text style={styles.textStyle}>Home Screen</Text>
-    </View>
+    <AuthContext.Consumer>
+      {(auth) => (
+        <View>
+          <Text style={styles.textStyle}>Home Screen</Text>
+          <Button
+            title="Log Out"
+            type="outline"
+            onPress={function () {
+              auth.setIsLoggedIn(false);
+            }}
+          />
+        </View>
+      )}
+    </AuthContext.Consumer>
   );
 };
 

@@ -3,10 +3,12 @@ import { StyleSheet, View, Text } from "react-native";
 import { Input, Button, Card } from "react-native-elements";
 import { Zocial,Fontisto,FontAwesome } from "@expo/vector-icons";
 import { SimpleLineIcons } from '@expo/vector-icons';
+import { AuthContext } from "./src/providers/AuthProvider";
 
 const SignInScreen = (props) => {
   return (
-    <View style={styles.viewStyle}>
+    <AuthContext.Consumer>
+    {(auth)=>(<View style={styles.viewStyle}>
       <Card>
         <Card.Title>Welcome to AuthApp!!!</Card.Title>
         <Card.Divider />
@@ -23,7 +25,10 @@ const SignInScreen = (props) => {
         <Button
         icon={<SimpleLineIcons name="login" size={24} color="black" />}
         title='   Sign In'
-        type='outline' />
+        type='outline'
+        onPress={function(){
+          auth.setIsLoggedIn(true); 
+        }} />
         <Button 
         icon={<FontAwesome name="user-circle-o" size={24} color="black" />}
         title="   Don't have an account?"
@@ -33,7 +38,8 @@ const SignInScreen = (props) => {
         }}
         />
       </Card>
-    </View>
+    </View>)}
+    </AuthContext.Consumer>
   );
 };
 
