@@ -4,7 +4,6 @@ import { Input, Button, Card } from "react-native-elements";
 import { Zocial, Fontisto, FontAwesome } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { AuthContext } from "../providers/AuthProvider";
-//import {getDataJSON} from "../functions/AsyncStorageFunctions";
 import * as firebase from "firebase";
 import Loading from "../components/Loading";
 
@@ -43,17 +42,17 @@ const SignInScreen = (props) => {
                 title="   Sign In"
                 type="outline"
                 onPress={() => {
-                  isLoading(true);
+                  setIsLoading(true);
                   firebase
                     .auth()
                     .signInWithEmailAndPassword(Email, Password)
                     .then((userCreds) => {
-                      isLoading(false);
+                    setIsLoading(false);
                       auth.setIsLoggedIn(true);
                       auth.setCurrentUser(userCreds.user);
                     })
                     .catch((error) => {
-                      isLoading(false);
+                      setIsLoading(false);
                       alert(error);
                     });
                 }}
@@ -85,13 +84,3 @@ const styles = StyleSheet.create({
 });
 
 export default SignInScreen;
-// async function () {
-//   let UserData = await getDataJSON(Email);
-//   if (UserData.password== Password) {
-//     auth.setIsLoggedIn(true);
-//     auth.setCurrentUser(UserData);
-//   } else {
-//     alert("Login Failed");
-//     console.log(UserData);
-//   }
-// }
