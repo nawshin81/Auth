@@ -10,20 +10,14 @@ import SignUpScreen from "./src/screens/SignUpScreen";
 import SignInScreen from "./src/screens/SignInScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import { AuthContext, AuthProvider } from "./src/providers/AuthProvider";
+import * as firebase from "firebase"
 
 const HomeStack = createStackNavigator();
 const AuthStack = createStackNavigator();
 const HomeTab = createMaterialBottomTabNavigator();
 const AppDrawer=createDrawerNavigator();
 import { Entypo, AntDesign, Ionicons } from "@expo/vector-icons";
-// const HomeStackScreen = () => {
-//   return (
-//     <HomeStack.Navigator initialRouteName="Home">
-//       <HomeStack.Screen name="Home" component={HomeScreen}
-//       options={{headerShown:false}} />
-//     </HomeStack.Navigator>
-//   );
-// };
+
 const AppDrawerScreen=()=>{
   return(
   <AppDrawer.Navigator>
@@ -85,6 +79,19 @@ const AuthStackScreen = () => {
     </AuthStack.Navigator>
   );
 };
+const firebaseConfig = {
+  apiKey: "AIzaSyC2cKiv3cFmOEpcNTg-PoG12IqC9jGHLqE",
+  authDomain: "auth-468dc.firebaseapp.com",
+  databaseURL: "https://auth-468dc.firebaseio.com",
+  projectId: "auth-468dc",
+  storageBucket: "auth-468dc.appspot.com",
+  messagingSenderId: "852209524153",
+  appId: "1:852209524153:web:825c8d709aa14c1a33ea68"
+};
+// Initialize Firebase
+if(!firebase.apps.length){
+firebase.initializeApp(firebaseConfig);
+}
 
 function App() {
   return (

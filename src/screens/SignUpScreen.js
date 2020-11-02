@@ -3,13 +3,20 @@ import { StyleSheet, View } from "react-native";
 import { Input, Button, Card } from "react-native-elements";
 import { Zocial, Fontisto, FontAwesome, Ionicons } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
-import { storeDataJSON} from "../functions/AsyncStorageFunctions";
+//import { storeDataJSON} from "../functions/AsyncStorageFunctions";
+import * as firebase from "firebase";
+import Loading from "../components/Loading"
 
 const SignUpScreen = (props) => {
   const [Name, setName] = useState("");
   const [SID, setSID] = useState("");
   const [Email, setEmail] = useState("");
   const [Password, setPassword] = useState("");
+  const[isLoading,setIsLoading]=useState(false)
+  if(isLoading){
+    return<Loading />
+  }
+  else{
   return (
     <View style={styles.viewStyle}>
       <Card>
@@ -49,16 +56,42 @@ const SignUpScreen = (props) => {
           icon={<FontAwesome name="user-circle-o" size={24} color="black" />}
           title="   Sign Up"
           type="outline"
-          onPress={function(){
-            let currentUser={
-              name:Name,
-              sid:SID,
-              email:Email,
-              password:Password,
+          onPress={function () {
+            if (Name && SID && Email && Password) {
+              setIsLoading(true)
+              firebase
+                .auth()
+                .createUserWithEmailAndPassword(Email, Password)
+                .then((userCreds) => {
+                  userCreds.user.updateProfile({ displayName: Name });
+                  firebase
+                    .database()
+                    .ref()
+                    .child("users/")
+                    .child(userCreds.user.uid)
+                    .set({
+                      name: Name,
+                      sid: SID,
+                      email: Email,
+                    })
+                    .then(() => {
+                      isLoading(false)
+                      alert("Account created successfully");
+                      console.log(userCreds.user);
+                      props.navigation.navigate("SignIn");
+                    })
+                    .catch((error) => {
+                      isLoading(false)
+                      alert(error);
+                    });
+                })
+                .catch((error) => {
+                  isLoading(false)
+                  alert(error);
+                });
+            } else {
+              alert("Fields can't left empty");
             }
-            storeDataJSON(Email,currentUser)
-            //console.log(currentUser)
-            props.navigation.navigate('SignIn')
           }}
         />
         <Button
@@ -71,8 +104,9 @@ const SignUpScreen = (props) => {
         />
       </Card>
     </View>
-  );
+  );}
 };
+
 
 const styles = StyleSheet.create({
   viewStyle: {
@@ -83,3 +117,14 @@ const styles = StyleSheet.create({
 });
 
 export default SignUpScreen;
+// function(){
+//             let currentUser={
+//               name:Name,
+//               sid:SID,
+//               email:Email,
+//               password:Password,
+//             }
+//             storeDataJSON(Email,currentUser)
+//             //console.log(currentUser)
+//             props.navigation.navigate('SignIn')
+//           }
