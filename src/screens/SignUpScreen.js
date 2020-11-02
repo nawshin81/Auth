@@ -4,6 +4,7 @@ import { Input, Button, Card } from "react-native-elements";
 import { Zocial, Fontisto, FontAwesome, Ionicons } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import * as firebase from "firebase";
+import 'firebase/firestore'
 import Loading from "../components/Loading";
 
 const SignUpScreen = (props) => {
@@ -63,10 +64,9 @@ const SignUpScreen = (props) => {
                   .then((userCreds) => {
                     userCreds.user.updateProfile({ displayName: Name });
                     firebase
-                      .database()
-                      .ref()
-                      .child("users/")
-                      .child(userCreds.user.uid)
+                      .firestore()
+                      .collection('users')
+                      .doc(userCreds.user.uid)
                       .set({
                         name: Name,
                         sid: SID,
