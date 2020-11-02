@@ -67,7 +67,7 @@ const SignUpScreen = (props) => {
                       .firestore()
                       .collection('users')
                       .doc(userCreds.user.uid)
-                      .set({
+                      .set({ 
                         name: Name,
                         sid: SID,
                         email: Email,

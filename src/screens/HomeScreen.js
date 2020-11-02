@@ -1,60 +1,48 @@
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  View,
-  FlatList,
-ActivityIndicator
-} from "react-native";
+import { StyleSheet, View, FlatList, ActivityIndicator } from "react-native";
 import { Input, Button, Card } from "react-native-elements";
 import { AuthContext } from "../providers/AuthProvider";
 import { MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
 import HeaderHome from "../components/HeaderHome";
 import PostCard from "../components/PostCard";
-import { getPosts } from "../requests/Posts";
-import { getUsers } from "../requests/Users";
-import {useNetInfo} from '@react-native-community/netinfo'
-
+import { useNetInfo } from "@react-native-community/netinfo";
+import * as firebase from "firebase";
+import "firebase/firestore";
 const HomeScreen = (props) => {
-  const netInfo=useNetInfo()
-  // console.log(netInfo)
-  if(netInfo.type!='unknown' && !netInfo.isInternetReachable){
-    alert("No internet connection")
+  const clearinput = React.createRef();
+  const netInfo = useNetInfo();
+  if (netInfo.type != "unknown" && !netInfo.isInternetReachable) {
+    alert("No internet connection");
   }
   const [posts, setposts] = useState([]);
-  const [users, setusers] = useState([]);
-  const[loading,setloading]=useState(false)
+  const [loading, setloading] = useState(false);
+  const [input, setinput] = useState("");
   const loadPosts = async () => {
-    setloading(true)
-    const response = await getPosts();
-    if (response.ok) {
-      setposts(response.data);
-    } else {
-      alert(response.problem);
-    }
+    setloading(true);
+    firebase
+      .firestore()
+      .collection("posts")
+      .orderBy("created_at","desc")
+      .onSnapshot((querySnapShot) => {
+        let temp_posts = [];
+        querySnapShot.forEach((doc) => {
+          temp_posts.push({
+            id: doc.id,
+            data: doc.data(),
+          });
+        });
+        setposts(temp_posts);
+        setloading(false);
+      })
+      .catch((error) => {
+        setloading(false);
+        alert(error);
+      });
+    
   };
-  const loadUsers = async () => {
-    const response = await getUsers();
-    if (response.ok) {
-      setusers(response.data);
-    } else {
-      alert(response.problem);
-    }
-    setloading(false)
-  };
-const getName=(id)=>{
-  let name=''
-  users.forEach((element)=>{
-    if(element.id==id)
-    {
-      name=element.name
-    }
-  })
-  return name
-}
 
   useEffect(() => {
     loadPosts();
-    loadUsers();
   }, []);
 
   return (
@@ -64,6 +52,7 @@ const getName=(id)=>{
           <HeaderHome navigation={props.navigation} />
           <Card>
             <Input
+            ref={clearinput}
               placeholder="What's on your mind?"
               leftIcon={
                 <MaterialCommunityIcons
@@ -72,18 +61,47 @@ const getName=(id)=>{
                   color="black"
                 />
               }
+              onChangeText={(currentinput) => {
+                setinput(currentinput);
+              }}
             />
-            <Button title="Post" type="outline" onPress={function () {}} />
+            <Button
+              title="Post"
+              type="outline"
+              onPress={function () {
+                setloading(true);
+                firebase
+                  .firestore()
+                  .collection("posts")
+                  .add({
+                    userId: auth.CurrentUser.uid,
+                    body: input,
+                    author: auth.CurrentUser.displayName,
+                    created_at: firebase.firestore.Timestamp.now(),
+                    likes: [],
+                    comments: [],
+                  })
+                  .then(() => {
+                    setloading(false);
+                    alert("Post created successfully");
+                    clearinput.current.clear();
+                  })
+                  .catch((error) => {
+                    setloading(false);
+                    alert(error);
+                  });
+              }}
+            />
           </Card>
-          <ActivityIndicator size='large' color='red' animating={loading} />
+          <ActivityIndicator size="large" color="red" animating={loading} />
           <FlatList
             data={posts}
             renderItem={function ({ item }) {
               return (
                 <PostCard
-                  author={getName(item.userId)}
-                  title={item.title}
-                  body={item.body}
+                  author={item.data.author}
+                  title={item.id}
+                  body={item.data.body}
                 />
               );
             }}
