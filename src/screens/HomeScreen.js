@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
-  ScrollView,
   FlatList,
-  AsyncStorage,
+ActivityIndicator
 } from "react-native";
 import { Input, Button, Card } from "react-native-elements";
 import { AuthContext } from "../providers/AuthProvider";
@@ -17,7 +16,9 @@ import { getUsers } from "../requests/Users";
 const HomeScreen = (props) => {
   const [posts, setposts] = useState([]);
   const [users, setusers] = useState([]);
+  const[loading,setloading]=useState(false)
   const loadPosts = async () => {
+    setloading(true)
     const response = await getPosts();
     if (response.ok) {
       setposts(response.data);
@@ -32,6 +33,7 @@ const HomeScreen = (props) => {
     } else {
       alert(response.problem);
     }
+    setloading(false)
   };
 const getName=(id)=>{
   let name=''
@@ -67,6 +69,7 @@ const getName=(id)=>{
             />
             <Button title="Post" type="outline" onPress={function () {}} />
           </Card>
+          <ActivityIndicator size='large' color='red' animating={loading} />
           <FlatList
             data={posts}
             renderItem={function ({ item }) {
