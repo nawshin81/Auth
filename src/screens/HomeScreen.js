@@ -12,8 +12,14 @@ import HeaderHome from "../components/HeaderHome";
 import PostCard from "../components/PostCard";
 import { getPosts } from "../requests/Posts";
 import { getUsers } from "../requests/Users";
+import {useNetInfo} from '@react-native-community/netinfo'
 
 const HomeScreen = (props) => {
+  const netInfo=useNetInfo()
+  // console.log(netInfo)
+  if(netInfo.type!='unknown' && !netInfo.isInternetReachable){
+    alert("No internet connection")
+  }
   const [posts, setposts] = useState([]);
   const [users, setusers] = useState([]);
   const[loading,setloading]=useState(false)
